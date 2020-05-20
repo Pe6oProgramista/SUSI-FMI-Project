@@ -2,11 +2,11 @@
 #include <string>
 #include <vector>
 
-#include "utils.hpp"
+#include "utility/utils.hpp"
 
-#include "../include/App.hpp"
-#include "../include/Operation.hpp"
-#include "../include/operations/OpenOperation.hpp"
+#include "App.hpp"
+#include "Operation.hpp"
+#include "operations/OpenOperation.hpp"
 
 namespace susi {
     namespace utils {
@@ -15,14 +15,44 @@ namespace susi {
             std::string token;
             std::istringstream tokenStream(s);
             while (std::getline(tokenStream, token, delimiter)) {
+                token = trim(token);
+                if(token == "") continue;
                 tokens.push_back(token);
             }
             return tokens;
         }
 
-        // App load_app(std::string filename) {
+        std::vector<std::string> split(const std::string& s, std::string delimiter) {
+            std::vector<std::string> tokens;
+            char token;
+            std::string curr_str;
+            std::istringstream tokenStream(s);
+            while (tokenStream.get(token)) {
+                if(delimiter.find(token)) {
+                    curr_str = trim(curr_str);
+                    if(curr_str == "") continue;
+                    tokens.push_back(curr_str);
+                    curr_str.clear();
+                } else {
+                    curr_str.push_back(token);
+                }
+            }
 
-        // }
+            return tokens;
+        }
+
+        std::string trim(std::string s) {
+            std::size_t startpos = s.find_first_not_of(" \t");
+            std::size_t endpos = s.find_last_not_of(" \t");
+
+            if(startpos == std::string::npos || endpos == std::string::npos) {
+                return "";
+            }
+
+            s = s.substr(startpos, endpos - startpos + 1);
+
+            return s;
+        }
 
         std::vector<Operation*> generate_operations(App& app) {
             std::vector<Operation*> ops;

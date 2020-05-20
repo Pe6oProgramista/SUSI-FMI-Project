@@ -60,7 +60,7 @@ namespace susi {
     
     double Student::avg_grade() const {
         double grade = 0;
-        for(int i = 0; i < grades.size(); i++) {
+        for(size_t i = 0; i < grades.size(); i++) {
             grade += grades[i].value;
         }
 
@@ -94,7 +94,7 @@ namespace susi {
         tmp[size] = '\0';
 
         const std::vector<Specialty::Ptr>& specialties = app.get_specialties();
-        for(int i = 0; i < specialties.size(); i++) {
+        for(size_t i = 0; i < specialties.size(); i++) {
             if(specialties[i]->get_name() == tmp) {
                 s.specialty = specialties[i];
                 break;
@@ -138,7 +138,7 @@ namespace susi {
         size_t count;
         in.read((char*) &count, sizeof(count));
 
-        for(int i = 0; i < count; i++) {
+        for(size_t i = 0; i < count; i++) {
             // read value
             Grade grade(0, Subject::Ptr());
             in.read((char*) &grade.value, sizeof(grade.value));
@@ -154,7 +154,7 @@ namespace susi {
             tmp[size] = '\0';
             
             const std::vector<Subject::Ptr>& subjects = app.get_subjects();
-            for(int i = 0; i < subjects.size(); i++) {
+            for(size_t i = 0; i < subjects.size(); i++) {
                 if(subjects[i]->get_name() == tmp) {
                     grade.subject = subjects[i];
                     break;
@@ -205,7 +205,7 @@ namespace susi {
         size = grades.size();
         out.write((char*) &size, sizeof(size));
 
-        for(int i = 0; i < grades.size(); i++) {
+        for(size_t i = 0; i < grades.size(); i++) {
             // write value
             out.write((char*) &grades[i].value, sizeof(grades[i].value));
 

@@ -32,7 +32,7 @@ namespace susi {
 
         std::vector<Operation*> operations;
 
-        bool status;
+        bool status = false;
         std::string app_filename;
         std::string specialties_filename;
         std::string subjects_filename;
@@ -43,6 +43,10 @@ namespace susi {
         void add_spec_subj(SpecSubj& connection);
     
     public:
+        App() = default;
+        App(const App& app) = delete;
+        ~App();
+
         bool get_status() const;
         void set_status(bool status);
 
@@ -69,10 +73,9 @@ namespace susi {
         void add_student(Student& student);
         void add_spec_subj(std::string spec_name, std::string subj_name, std::string type);
     
+        const std::vector<Operation*>& get_operations() const;
         void add_operation(Operation* operation);
         Operation* find_operation(std::string name);
-
-        void update();
 
         // read/write funcitons
         void read_specialties();

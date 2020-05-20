@@ -2,19 +2,28 @@
 #include <string>
 #include <vector>
 
-#include "../include/Specialty.hpp"
-#include "../include/Subject.hpp"
-#include "../include/Student.hpp"
-#include "../include/App.hpp"
+#include "Specialty.hpp"
+#include "Subject.hpp"
+#include "Student.hpp"
+#include "App.hpp"
 
-#include "../include/operations/OpenOperation.hpp"
-#include "../include/operations/ExitOperation.hpp"
+#include "operations/OpenOperation.hpp"
+#include "operations/CloseOperation.hpp"
+#include "operations/SaveOperation.hpp"
+#include "operations/SaveAsOperation.hpp"
+#include "operations/HelpOperation.hpp"
+#include "operations/ExitOperation.hpp"
 
-#include "../utility/utils.hpp"
+#include "utility/utils.hpp"
 
 int main() {
     susi::App app;
     app.add_operation(new susi::OpenOperation(app));
+    app.add_operation(new susi::CloseOperation(app));
+    app.add_operation(new susi::SaveOperation(app));
+    app.add_operation(new susi::SaveAsOperation(app));
+    app.add_operation(new susi::HelpOperation(app));
+    app.add_operation(new susi::ExitOperation(app));
 
     std::string command;
     while (true) {
@@ -23,6 +32,8 @@ int main() {
             std::getline(std::cin, command);
 
             std::vector<std::string> args = susi::utils::split(command, ' ');
+            if(args.size() == 0) continue;
+            
             susi::Operation* operation = app.find_operation(args[0]);
 
             args.erase(args.begin());

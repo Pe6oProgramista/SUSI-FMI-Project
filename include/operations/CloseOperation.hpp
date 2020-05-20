@@ -4,9 +4,9 @@
 
 namespace susi {
 
-    class ExitOperation : public Operation {
+    class CloseOperation : public Operation {
     public:
-        ExitOperation(App& app);
+        CloseOperation(App& app);
         
         void execute(const std::vector<std::string>& args);
     };

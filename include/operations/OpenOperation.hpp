@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../Operation.hpp"
+#include "Operation.hpp"
 
 namespace susi {
 
@@ -8,7 +8,7 @@ namespace susi {
     public:
         OpenOperation(App& app);
         
-        void execute(std::vector<std::string>& args);
+        void execute(const std::vector<std::string>& args);
     };
 
 }

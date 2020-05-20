@@ -6,6 +6,13 @@
 #include "../include/Operation.hpp"
 
 namespace susi {
+
+    App::~App() {
+        for(Operation*& it : operations) {
+            delete it;
+        }
+    }
+
     bool App::get_status() const { return status; }
     void App::set_status(bool status) { this->status = status; }
 
@@ -47,7 +54,7 @@ namespace susi {
     void App::add_spec_subj(std::string spec_name, std::string subj_name, std::string type) {
         SpecSubj s;
         
-        for(int i = 0; i < sizeof(types); i++) {
+        for(size_t i = 0; i < sizeof(types); i++) {
             if(type == types[i]) {
                 break;
             } else if(i == (sizeof(types) - 1)) {
@@ -56,7 +63,7 @@ namespace susi {
         }
         s.type = type;
 
-        for(int i = 0; i < specialties.size(); i++) {
+        for(size_t i = 0; i < specialties.size(); i++) {
             if (specialties[i]->get_name() == spec_name) {
                 s.specialty = specialties[i];
                 break;
@@ -66,7 +73,7 @@ namespace susi {
             throw AppException("ERROR: Can't find such specialty");
         }
     
-        for(int i = 0; i < subjects.size(); i++) {
+        for(size_t i = 0; i < subjects.size(); i++) {
             if (subjects[i]->get_name() == subj_name) {
                 s.subject = subjects[i];
                 break;
@@ -78,6 +85,8 @@ namespace susi {
 
         add_spec_subj(s);
     }
+
+    const std::vector<Operation*>& App::get_operations() const { return operations; }
 
     void App::add_operation(Operation* operation) {
         operations.push_back(operation);
@@ -92,22 +101,20 @@ namespace susi {
 		throw OperationException("ERROR: Unknown operation");
     }
 
-    // TODO
-    void update() {
-
-    }
-
     // read/write funcitons
     void App::read_specialties() {
+        std::ofstream create(specialties_filename, std::ios::binary | std::ios::app);
+        create.close();
+
         std::ifstream in(specialties_filename, std::ios::binary);
         if (in.fail()) {
             throw AppException("ERROR: File can't be opened. Filename: " + specialties_filename);
         }
 
-        size_t size;
+        size_t size = 0;
         in.read((char*) &size, sizeof(size));
 
-        for(int i = 0; i < size; i++) {
+        for(size_t i = 0; i < size; i++) {
             Specialty* s = new Specialty();
             s->read(in);
             specialties.push_back(s);
@@ -122,21 +129,24 @@ namespace susi {
 
         size_t size = specialties.size();
         out.write((char*) &size, sizeof(size));
-        for (int i = 0; i < size; i++) {
+        for (size_t i = 0; i < size; i++) {
 			specialties[i]->write(out);
 		}
     }
 
     void App::read_subjects() {
+        std::ofstream create(subjects_filename, std::ios::binary | std::ios::app);
+        create.close();
+
         std::ifstream in(subjects_filename, std::ios::binary);
         if (in.fail()) {
             throw AppException("ERROR: File can't be opened. Filename: " + subjects_filename);
         }
 
-        size_t size;
+        size_t size = 0;
         in.read((char*) &size, sizeof(size));
 
-        for(int i = 0; i < size; i++) {
+        for(size_t i = 0; i < size; i++) {
             Subject* s = new Subject();
             s->read(in);
             subjects.push_back(s);
@@ -152,21 +162,24 @@ namespace susi {
         size_t size = subjects.size();
         out.write((char*) &size, sizeof(size));
 
-        for (int i = 0; i < size; i++) {
+        for (size_t i = 0; i < size; i++) {
 			subjects[i]->write(out);
 		}
     }
 
     void App::read_students() {
+        std::ofstream create(students_filename, std::ios::binary | std::ios::app);
+        create.close();
+
         std::ifstream in(students_filename, std::ios::binary);
         if (in.fail()) {
             throw AppException("ERROR: File can't be opened. Filename: " + students_filename);
         }
 
-        size_t size;
+        size_t size = 0;
         in.read((char*) &size, sizeof(size));
 
-        for(int i = 0; i < size; i++) {
+        for(size_t i = 0; i < size; i++) {
             Student s;
             s.read(in, *this);
             students.push_back(s);
@@ -182,21 +195,24 @@ namespace susi {
         size_t size = students.size();
         out.write((char*) &size, sizeof(size));
 
-        for (int i = 0; i < size; i++) {
+        for (size_t i = 0; i < size; i++) {
 			students[i].write(out);
 		}
     }
 
     void App::read_spec_subj() {
+        std::ofstream create(spec_subj_filename, std::ios::binary | std::ios::app);
+        create.close();
+
         std::ifstream in(spec_subj_filename, std::ios::binary);
         if (in.fail()) {
             throw AppException("ERROR: File can't be opened. Filename: " + spec_subj_filename);
         }
 
-        size_t count;
+        size_t count = 0;
         in.read((char*) &count, sizeof(count));
 
-        for(int i = 0; i < count; i++) {
+        for(size_t i = 0; i < count; i++) {
             size_t size;
             char* spec_name;
             char* subj_name;
@@ -245,7 +261,7 @@ namespace susi {
         size_t count = spec_subjecs.size();
         out.write((char*) &count, sizeof(count));
 
-        for(int i = 0; i < count; i++) {
+        for(size_t i = 0; i < count; i++) {
             size_t size;
             std::string name;
 
@@ -270,40 +286,48 @@ namespace susi {
     }
 
     void App::read(std::ifstream& in) {
-        size_t size;
-        char* filename;
+        if(!std::getline(in, specialties_filename)) specialties_filename = app_filename + "_specialties.bin";
+        if(!std::getline(in, subjects_filename)) subjects_filename = app_filename + "_subjects.bin";
+        if(!std::getline(in, students_filename)) students_filename = app_filename + "_students.bin";
+        if(!std::getline(in, spec_subj_filename)) spec_subj_filename = app_filename + "_spec_subj.bin";
+        
+        // if app_file is bin
+        {
+            // size_t size;
+            // char* filename;
 
-        // read size specialties_filename
-        in.read((char*) &size, sizeof(size));
-        filename = new char[size + 1];
-        in.read(filename, size);
-        filename[size] = '\0';
-        specialties_filename = filename;
-        delete [] filename;
+            // // read size specialties_filename
+            // in.read((char*) &size, sizeof(size));
+            // filename = new char[size + 1];
+            // in.read(filename, size);
+            // filename[size] = '\0';
+            // specialties_filename = filename;
+            // delete [] filename;
 
-        // read size subjects_filename
-        in.read((char*) &size, sizeof(size));
-        filename = new char[size + 1];
-        in.read(filename, size);
-        filename[size] = '\0';
-        subjects_filename = filename;
-        delete [] filename;
+            // // read size subjects_filename
+            // in.read((char*) &size, sizeof(size));
+            // filename = new char[size + 1];
+            // in.read(filename, size);
+            // filename[size] = '\0';
+            // subjects_filename = filename;
+            // delete [] filename;
 
-        //read size students_filename
-        in.read((char*) &size, sizeof(size));
-        filename = new char[size + 1];
-        in.read(filename, size);
-        filename[size] = '\0';
-        students_filename = filename;
-        delete [] filename;
+            // //read size students_filename
+            // in.read((char*) &size, sizeof(size));
+            // filename = new char[size + 1];
+            // in.read(filename, size);
+            // filename[size] = '\0';
+            // students_filename = filename;
+            // delete [] filename;
 
-        //read size spec_subj_filename
-        in.read((char*) &size, sizeof(size));
-        filename = new char[size + 1];
-        in.read(filename, size);
-        filename[size] = '\0';
-        spec_subj_filename = filename;
-        delete [] filename;
+            // //read size spec_subj_filename
+            // in.read((char*) &size, sizeof(size));
+            // filename = new char[size + 1];
+            // in.read(filename, size);
+            // filename[size] = '\0';
+            // spec_subj_filename = filename;
+            // delete [] filename;
+        }
 
         read_specialties();
         read_subjects();
@@ -311,25 +335,37 @@ namespace susi {
         read_spec_subj();
     }
 
-    // TODO
-    // Write filenames
+    // Write files
     void App::write(std::ofstream& out) const {
-        size_t size;
+        out << specialties_filename << '\n'
+            << subjects_filename << '\n'
+            << students_filename << '\n'
+            << spec_subj_filename << '\n';
         
-        // write size specialties_filename
-        size = specialties_filename.size();
-        out.write((const char*) &size, sizeof(size));
-	    out.write(specialties_filename.c_str(), size);
+        // if app_file is bin
+        {
+            // size_t size;
+            
+            // // write size specialties_filename
+            // size = specialties_filename.size();
+            // out.write((const char*) &size, sizeof(size));
+            // out.write(specialties_filename.c_str(), size);
 
-        // write size subjects_filename
-        size = subjects_filename.size();
-        out.write((const char*) &size, sizeof(size));
-	    out.write(subjects_filename.c_str(), size);
+            // // write size subjects_filename
+            // size = subjects_filename.size();
+            // out.write((const char*) &size, sizeof(size));
+            // out.write(subjects_filename.c_str(), size);
 
-        // write size students_filename
-        size = students_filename.size();
-        out.write((const char*) &size, sizeof(size));
-	    out.write(students_filename.c_str(), size);
+            // // write size students_filename
+            // size = students_filename.size();
+            // out.write((const char*) &size, sizeof(size));
+            // out.write(students_filename.c_str(), size);
+
+            // // write size spec_subj_filename
+            // size = spec_subj_filename.size();
+            // out.write((const char*) &size, sizeof(size));
+            // out.write(spec_subj_filename.c_str(), size);
+        }
 
         write_specialties();
         write_subjects();
