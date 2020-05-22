@@ -1,9 +1,11 @@
-#include "../include/App.hpp"
+#include <string>
 
-#include "../include/Specialty.hpp"
-#include "../include/Subject.hpp"
-#include "../include/Student.hpp"
-#include "../include/Operation.hpp"
+#include "App.hpp"
+
+#include "Specialty.hpp"
+#include "Subject.hpp"
+#include "Student.hpp"
+#include "Operation.hpp"
 
 namespace susi {
 
@@ -11,6 +13,20 @@ namespace susi {
         for(Operation*& it : operations) {
             delete it;
         }
+    }
+
+    void App::close() {
+        specialties = std::vector<SpecialtyPtr>();
+        subjects = std::vector<SubjectPtr>();
+        students = std::vector<Student>();
+        spec_subjecs = std::vector<SpecSubj>();
+
+        status = false;
+        app_filename = "";
+        specialties_filename = "";
+        subjects_filename = "";
+        students_filename = "";
+        spec_subj_filename = "";
     }
 
     bool App::get_status() const { return status; }
@@ -31,27 +47,67 @@ namespace susi {
     std::string App::get_spec_subj_fn() const { return spec_subj_filename; }
     void App::set_spec_subj_fn(std::string filename) { spec_subj_filename = filename; }
 
-    const std::vector<Specialty::Ptr>& App::get_specialties() const { return specialties; }
+    const std::vector<SpecialtyPtr>& App::get_specialties() const { return specialties; }
 
-    const std::vector<Subject::Ptr>& App::get_subjects() const { return subjects; }
+    const std::vector<SubjectPtr>& App::get_subjects() const { return subjects; }
 
-    void App::add_specialty(Specialty::Ptr specialty) {
+    const std::vector<Student>& App::get_students() const { return students; }
+
+    const std::vector<App::SpecSubj>& App::get_spec_subjs() const { return spec_subjecs; }
+
+    void App::add_specialty(SpecialtyPtr specialty) {
+        for(const SpecialtyPtr& sp : specialties) {
+            if(*sp == *specialty) {
+                throw AppException("This specialty already exists");
+            }
+        }
+        
         specialties.push_back(specialty);
     }
 
-    void App::add_subject(Subject::Ptr subject) {
+    void App::add_subject(SubjectPtr subject) {
+        for(const SubjectPtr& sp : subjects) {
+            if(*sp == *subject) {
+                throw AppException("This subject already exists");
+            }
+        }
         subjects.push_back(subject);
     }
 
-    void App::add_student(Student& student) {
-        students.push_back(student);
+    void App::add_student(const std::string& name,
+        const std::size_t& fn,
+        const std::string& specialty_name,
+        const unsigned short& group) {
+
+        for(const Student& s : students) {
+            if(s.get_fn() == fn) {
+                throw AppException("ERROR: There's an existing student with this fn");
+            }
+        }
+
+        SpecialtyPtr spec;
+
+        for(const SpecialtyPtr& sp : specialties) {
+            if(sp->get_command_name() == specialty_name) {
+                spec = sp;
+                break;
+            }
+            if(*sp == *specialties[specialties.size() - 1]) {
+                throw AppException("ERROR: There's an existing student with this fn");
+            }
+        }
+
+        if(group == 0 || group > spec->get_groups_cnts()[0]) {
+            throw AppException("ERROR: Invalid group for this specialty");
+        }
+
+        students.push_back(Student(name, fn, spec, group));
     }
 
-    void App::add_spec_subj(SpecSubj& connection) {
-        spec_subjecs.push_back(connection);
-    }
-
-    void App::add_spec_subj(std::string spec_name, std::string subj_name, std::string type) {
+    App::SpecSubj App::add_spec_subj(const std::string& spec_name,
+        const std::string& subj_name,
+        const std::string& type,
+        const unsigned short& course) {
         SpecSubj s;
         
         for(size_t i = 0; i < sizeof(types); i++) {
@@ -64,7 +120,7 @@ namespace susi {
         s.type = type;
 
         for(size_t i = 0; i < specialties.size(); i++) {
-            if (specialties[i]->get_name() == spec_name) {
+            if (specialties[i]->get_command_name() == spec_name) {
                 s.specialty = specialties[i];
                 break;
             }
@@ -74,7 +130,7 @@ namespace susi {
         }
     
         for(size_t i = 0; i < subjects.size(); i++) {
-            if (subjects[i]->get_name() == subj_name) {
+            if (subjects[i]->get_command_name() == subj_name) {
                 s.subject = subjects[i];
                 break;
             }
@@ -83,7 +139,21 @@ namespace susi {
             throw AppException("ERROR: Can't find such subject");
         }
 
-        add_spec_subj(s);
+        if(course == 0 || course > s.specialty->get_courses_cnt()) {
+            throw AppException("ERROR: Invalid course");
+        }
+        s.course = course;
+
+        spec_subjecs.push_back(s);
+        return s;
+    }
+
+    Student& App::find_student(const std::size_t& fn) {
+        for(Student& s : students) {
+            if(s.get_fn() == fn) return s;
+        }
+
+        throw AppException("ERROR: No student with faculty number: " + std::to_string(fn));
     }
 
     const std::vector<Operation*>& App::get_operations() const { return operations; }
@@ -217,6 +287,7 @@ namespace susi {
             char* spec_name;
             char* subj_name;
             char* type;
+            unsigned short course;
 
             // read specialty name
             in.read((char*) &size, sizeof(size));
@@ -236,9 +307,12 @@ namespace susi {
             in.read(type, size);
             type[size] = '\0';
 
+            // read course
+            in.read((char*) &course, sizeof(course));
+
             // add readed SpecSubj
             try {
-                add_spec_subj(spec_name, subj_name, type);
+                add_spec_subj(spec_name, subj_name, type, course);
             } catch(std::exception& e) {
                 delete[] spec_name;
                 delete[] subj_name;
@@ -282,6 +356,9 @@ namespace susi {
             size = name.size();
             out.write((const char*) &size, sizeof(size));
             out.write(name.c_str(), size);
+
+            // write course
+            out.write((const char*) &spec_subjecs[i].course, sizeof(spec_subjecs[i].course));
         }
     }
 

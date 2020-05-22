@@ -2,28 +2,16 @@
 #include <string>
 #include <vector>
 
+#include "App.hpp"
 #include "Specialty.hpp"
 #include "Subject.hpp"
 #include "Student.hpp"
-#include "App.hpp"
-
-#include "operations/OpenOperation.hpp"
-#include "operations/CloseOperation.hpp"
-#include "operations/SaveOperation.hpp"
-#include "operations/SaveAsOperation.hpp"
-#include "operations/HelpOperation.hpp"
-#include "operations/ExitOperation.hpp"
 
 #include "utility/utils.hpp"
 
 int main() {
     susi::App app;
-    app.add_operation(new susi::OpenOperation(app));
-    app.add_operation(new susi::CloseOperation(app));
-    app.add_operation(new susi::SaveOperation(app));
-    app.add_operation(new susi::SaveAsOperation(app));
-    app.add_operation(new susi::HelpOperation(app));
-    app.add_operation(new susi::ExitOperation(app));
+    susi::utils::load_all_operations(app);
 
     std::string command;
     while (true) {
@@ -39,7 +27,7 @@ int main() {
             args.erase(args.begin());
             operation->execute(args);
 
-            if(operation->get_name() == "exit") { // dynamic_cast<susi::ExitOperation*>(operation)
+            if(operation->get_name() == "exit") {
                 break;
             }
 

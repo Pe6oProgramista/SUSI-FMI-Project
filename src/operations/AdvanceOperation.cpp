@@ -17,8 +17,11 @@ namespace susi {
             throw OperationException("ERROR: Different count of arguments");
         }
 
+        std::size_t fn = (std::size_t)atol(args[0].c_str());
+        Student& s = app.find_student(fn);
+        s.advance();
 
-        // TODO
+        std::cout << "Student " << s.get_name() << " successfully advanced\n";
     }
 
 }

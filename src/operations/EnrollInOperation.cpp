@@ -18,7 +18,17 @@ namespace susi {
         }
 
 
-        // TODO
+        std::size_t fn = (std::size_t)atol(args[0].c_str());
+        Student& s = app.find_student(fn);
+
+        std::string subject_name = args[1];
+        for(std::size_t i = 0; i < subject_name.size(); i++) {
+            if(subject_name[i] == '_') subject_name[i] = ' ';
+        }
+
+        s.enroll_in(subject_name, app);
+
+        std::cout << "The student successfully enrolled for subject " << subject_name << '\n';
     }
 
 }

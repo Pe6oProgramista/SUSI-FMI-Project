@@ -17,8 +17,22 @@ namespace susi {
             throw OperationException("ERROR: Different count of arguments");
         }
 
+        std::size_t fn = (std::size_t)atol(args[0].c_str());
+        Student& s = app.find_student(fn);
+        
+        if(args[1] == "program") {
+            s.change_specialty(args[2], app);
+        } else if(args[1] == "group") {
+            unsigned short group = atoi(args[2].c_str());
+            s.change_group(group);
+        } else if(args[1] == "year") {
+            unsigned short course = atoi(args[2].c_str());
+            s.change_course(course);
+        } else {
+            throw OperationException("ERROR: Invalid option. Choose one of: program, group, year");
+        }
 
-        // TODO
+        std::cout << "Student " << s.get_name() << " successfully changed " << args[1] << '\n';
     }
 
 }

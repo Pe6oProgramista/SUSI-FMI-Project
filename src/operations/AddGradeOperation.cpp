@@ -18,7 +18,15 @@ namespace susi {
         }
 
 
-        // TODO
+        std::size_t fn = (std::size_t)atol(args[0].c_str());
+        Student& s = app.find_student(fn);
+
+        std::string subject_name = args[1];
+        double grade = atof(args[2].c_str());
+
+        s.add_grade(grade, subject_name, app);
+
+        std::cout << "Grade successfully added\n";
     }
 
 }
