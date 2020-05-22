@@ -20,6 +20,8 @@ namespace susi {
 
         char toLowerCase(const char& c);
 
+        int countDigit(int n);
+
         void load_all_operations(App& app);
     }
 }

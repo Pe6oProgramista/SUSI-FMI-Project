@@ -17,6 +17,9 @@
 #include "operations/AddSpecialtyOperation.hpp"
 #include "operations/AddSubjectOperation.hpp"
 #include "operations/AddSubjectToOperation.hpp"
+#include "operations/PrintSpecialtiesOperation.hpp"
+#include "operations/PrintSubjectsOperation.hpp"
+
 #include "operations/EnrollOperation.hpp"
 #include "operations/AdvanceOperation.hpp"
 #include "operations/ChangeOperation.hpp"
@@ -87,6 +90,15 @@ namespace susi {
             return c;
         }
 
+        int countDigit(int n) { 
+            int count = 0; 
+            while (n != 0) { 
+                n = n / 10; 
+                ++count; 
+            } 
+            return count; 
+        } 
+
         void load_all_operations(App& app) {
             // default operations
             app.add_operation(new susi::OpenOperation(app));
@@ -100,6 +112,9 @@ namespace susi {
             app.add_operation(new susi::AddSpecialtyOperation(app));
             app.add_operation(new susi::AddSubjectOperation(app));
             app.add_operation(new susi::AddSubjectToOperation(app));
+            app.add_operation(new susi::PrintSpecialtiesOperation(app));
+            app.add_operation(new susi::PrintSubjectsOperation(app));
+
             app.add_operation(new susi::EnrollOperation(app));
             app.add_operation(new susi::AdvanceOperation(app));
             app.add_operation(new susi::ChangeOperation(app));

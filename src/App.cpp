@@ -57,7 +57,7 @@ namespace susi {
 
     void App::add_specialty(SpecialtyPtr specialty) {
         for(const SpecialtyPtr& sp : specialties) {
-            if(*sp == *specialty) {
+            if(sp->get_command_name() == specialty->get_command_name()) {
                 throw AppException("This specialty already exists");
             }
         }
@@ -92,16 +92,23 @@ namespace susi {
                 spec = sp;
                 break;
             }
-            if(*sp == *specialties[specialties.size() - 1]) {
-                throw AppException("ERROR: There's an existing student with this fn");
-            }
         }
+
+        if(spec.is_null()) throw AppException("ERROR: This specialty doesn't exist");
 
         if(group == 0 || group > spec->get_groups_cnts()[0]) {
             throw AppException("ERROR: Invalid group for this specialty");
         }
 
-        students.push_back(Student(name, fn, spec, group));
+        Student s = Student(name, fn, spec, group);
+        for(const SpecSubj& ss : spec_subjecs) {
+            if(ss.specialty->get_command_name() == spec->get_command_name() &&
+                ss.course == 1 &&
+                ss.type == "required") {
+                    s.enroll_in(ss.subject->get_command_name(), *this);
+                }
+        }
+        students.push_back(s);
     }
 
     App::SpecSubj App::add_spec_subj(const std::string& spec_name,
@@ -125,6 +132,7 @@ namespace susi {
                 break;
             }
         }
+
         if(s.specialty.is_null()) {
             throw AppException("ERROR: Can't find such specialty");
         }
@@ -143,6 +151,14 @@ namespace susi {
             throw AppException("ERROR: Invalid course");
         }
         s.course = course;
+
+        for(Student& st : students) {
+            if(st.get_specialty()->get_command_name() == spec_name &&
+                st.get_course() == s.course &&
+                s.type == "required") {
+                    st.enroll_in(s.subject->get_command_name(), *this);
+            }
+        }
 
         spec_subjecs.push_back(s);
         return s;
@@ -317,7 +333,7 @@ namespace susi {
                 delete[] spec_name;
                 delete[] subj_name;
                 delete[] type;
-                throw e;
+                throw;
             }
 
             delete[] spec_name;
@@ -340,13 +356,13 @@ namespace susi {
             std::string name;
 
             // write specialty name
-            name = spec_subjecs[i].specialty->get_name();
+            name = spec_subjecs[i].specialty->get_command_name();
             size = name.size();
             out.write((const char*) &size, sizeof(size));
             out.write(name.c_str(), size);
 
             // write subject name
-            name = spec_subjecs[i].subject->get_name();
+            name = spec_subjecs[i].subject->get_command_name();
             size = name.size();
             out.write((const char*) &size, sizeof(size));
             out.write(name.c_str(), size);

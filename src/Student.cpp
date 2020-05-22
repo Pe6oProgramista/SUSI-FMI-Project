@@ -54,6 +54,8 @@ namespace susi {
         throw StudentException("ERROR: Unknown status");
     }
 
+    const std::vector<Student::Grade>& Student::get_grades() const { return grades; }
+
     void Student::change_specialty(const std::string& specialty_name, App& app) {
         const std::vector<App::SpecSubj>& spec_subjs = app.get_spec_subjs();
         SpecialtyPtr sp;
@@ -114,15 +116,16 @@ namespace susi {
         }
 
         for(Grade& g : grades) {
-            if(g.subject->get_name() == subject_name) {
+            if(g.subject->get_command_name() == subject_name) {
                 throw StudentException("The student is already enrolled in this subject");
             }
         }
 
         const std::vector<App::SpecSubj> spec_subjs = app.get_spec_subjs();
         for(const App::SpecSubj& ss : spec_subjs) {
-            if(ss.specialty->get_name() == specialty->get_name() &&
-                ss.subject->get_name() == subject_name) {
+            if(ss.specialty->get_command_name() == specialty->get_command_name() &&
+                ss.subject->get_command_name() == subject_name &&
+                ss.course == course) {
                     grades.push_back(Grade(2., ss.subject));
                     return;
                 }
@@ -210,7 +213,6 @@ namespace susi {
         return grade / grades.size();
     }
 
-    // TODO figure out solution for app
     void Student::read(std::ifstream& in, const App& app) {
         Student s;
 
@@ -337,11 +339,11 @@ namespace susi {
         out.write((char*) &size, sizeof(size));
         out.write(specialty->get_name().c_str(), size);
 
-        // write group
-        out.write((char*) &group, sizeof(group));
-
         // write course
         out.write((char*) &course, sizeof(course));
+
+        // write group
+        out.write((char*) &group, sizeof(group));
         
         // write status
         size = get_status().size();

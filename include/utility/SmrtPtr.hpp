@@ -29,7 +29,7 @@ namespace susi {
                 count = p.count;
                 ++(*count);
 
-                if (--(*old_count) == 0) {
+                if (old_t != nullptr && --(*old_count) == 0) {
                     delete old_t;
                     delete old_count;
                 }

@@ -27,9 +27,11 @@ namespace susi {
         }
 
         for(std::size_t i = 0; i < name.size(); i++) {
-            if(name[i] == '_') name[i] = ' ';
-            if(name[i + 1] >= 'a' && name[i + 1] <= 'z') {
-                name[i + 1] -= 'a' - 'A';
+            if(name[i] == '_') {
+                name[i] = ' ';
+                if(name[i + 1] >= 'a' && name[i + 1] <= 'z') {
+                    name[i + 1] -= 'a' - 'A';
+                }
             }
         };
 

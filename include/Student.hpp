@@ -22,6 +22,7 @@ namespace susi {
             graduated
         };
 
+    public:
         struct Grade {
             double value;
             SubjectPtr subject;
@@ -57,6 +58,8 @@ namespace susi {
         const unsigned short& get_course() const;
         const unsigned short& get_group() const;
         std::string get_status() const;
+
+        const std::vector<Grade>& get_grades() const;
 
         void change_specialty(const std::string& specialty_name, App& app);
         void change_group(const unsigned short& group);

@@ -10,7 +10,7 @@ namespace susi {
     EnrollOperation::EnrollOperation(App& app)
         : Operation(app,
             "enroll",
-            "enroll a student <name> in 1 course, specialty <program>",
+            "enroll a student <name> in <program> 1 course",
             4,
             "<fn> <program> <group> <name>") {}
     
@@ -25,7 +25,7 @@ namespace susi {
 
 
         std::size_t fn = atol(args[0].c_str());
-        unsigned short group = (unsigned)atoi(args[2].c_str());
+        unsigned short group = atoi(args[2].c_str());
 
         std::string name = args[3];
         for(std::size_t i = 0; i < name.size(); i++) {
