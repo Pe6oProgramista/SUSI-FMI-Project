@@ -9,16 +9,32 @@
 
 #include "utility/utils.hpp"
 
+// open data/susi
 // add_specialty informatics 3 4 6 5 4 3
+// add_specialty informatics 3 4 4 3 2 1
+// add_specialty comp_science 3 4 4 3 2 1
 // add_subject math
 // add_subject linear_algebra
 // add_subject_to linear_algebra informatics required 1
 // add_subject_to math informatics optional 2
-// add_subject_to math informatics required 1
+// add_subject_to math informatics optional 1
+// add_subject_to linear_algebra comp_science optional 1
+// add_subject_to math comp_science required 4
+
 // enroll 1 informatics 1 Pancho_Iliev
 // enroll 2 informatics 1 Gosho
 // advance 2
+// enroll 5 comp_science 4 Petoko
+// advance 5
+// advance 5
+// advance 5
 // enroll 564 informatics 3 Ivan
+// report 1
+// save
+// close
+// open data/susi
+// report 1
+// exit
 
 int main() {
     susi::App app;

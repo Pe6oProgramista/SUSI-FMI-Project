@@ -9,26 +9,24 @@
 #include "Subject.hpp"
 #include "Student.hpp"
 #include "Operation.hpp"
-#include "utility/SmrtPtr.hpp"
+#include "utility/SmartPtr.hpp"
 
 namespace susi {
-    typedef utils::SmrtPtr<Specialty> SpecialtyPtr;
-    typedef utils::SmrtPtr<Subject> SubjectPtr;
-
+    
     class App {
     public:
         struct SpecSubj {
-            SpecialtyPtr specialty;
-            SubjectPtr subject;
+            utils::SmartPtr<Specialty> specialty;
+            utils::SmartPtr<Subject> subject;
             std::string type;
             unsigned short course;
 
-            SpecSubj() : specialty(SpecialtyPtr()), subject(SubjectPtr()), type(std::string()), course(0) {}
+            SpecSubj() : specialty(utils::SmartPtr<Specialty>()), subject(utils::SmartPtr<Subject>()), type(std::string()), course(0) {}
         };
     private:
 
-        std::vector<SpecialtyPtr> specialties;
-        std::vector<SubjectPtr> subjects;
+        std::vector<utils::SmartPtr<Specialty>> specialties;
+        std::vector<utils::SmartPtr<Subject>> subjects;
         std::vector<Student> students;
 
         const char types[2][10] = { "required", "optional" };
@@ -68,13 +66,13 @@ namespace susi {
         std::string get_spec_subj_fn() const;
         void set_spec_subj_fn(std::string filename);
 
-        const std::vector<SpecialtyPtr>& get_specialties() const;
-        const std::vector<SubjectPtr>& get_subjects() const;
+        const std::vector<utils::SmartPtr<Specialty>>& get_specialties() const;
+        const std::vector<utils::SmartPtr<Subject>>& get_subjects() const;
         const std::vector<Student>& get_students() const;
         const std::vector<SpecSubj>& get_spec_subjs() const;
 
-        void add_specialty(SpecialtyPtr specialty);
-        void add_subject(SubjectPtr subject);
+        void add_specialty(utils::SmartPtr<Specialty> specialty);
+        void add_subject(utils::SmartPtr<Subject> subject);
         void add_student(const std::string& name, const std::size_t& fn, const std::string& specialty_name, const unsigned short& group);
         SpecSubj add_spec_subj(const std::string& spec_name, const std::string& subj_name, const std::string& type, const unsigned short& course);
 

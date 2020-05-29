@@ -18,7 +18,7 @@ namespace susi {
             throw OperationException("ERROR: Different count of arguments");
         }
 
-        SubjectPtr sp(new Subject(args[0]));
+        utils::SmartPtr<Subject> sp(new Subject(args[0]));
         app.add_subject(sp);
 
         std::cout << "Successfully added subject " << sp->get_name() << '\n';

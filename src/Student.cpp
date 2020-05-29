@@ -12,7 +12,7 @@ namespace susi {
 
     Student::Student(std::string name,
         std::size_t faculty_number,
-        SpecialtyPtr s,
+        utils::SmartPtr<Specialty> s,
         unsigned short group)
         : name(name),
             faculty_number(faculty_number),
@@ -28,6 +28,7 @@ namespace susi {
         course = s.course;
         group = s.group;
         status = s.status;
+        grades = s.grades;
 
         return *this;
     }
@@ -36,7 +37,7 @@ namespace susi {
 
     const std::size_t& Student::get_fn() const { return faculty_number; }
 
-    const SpecialtyPtr& Student::get_specialty() const { return specialty; }
+    const utils::SmartPtr<Specialty>& Student::get_specialty() const { return specialty; }
 
     const unsigned short& Student::get_course() const { return course; }
     
@@ -58,7 +59,7 @@ namespace susi {
 
     void Student::change_specialty(const std::string& specialty_name, App& app) {
         const std::vector<App::SpecSubj>& spec_subjs = app.get_spec_subjs();
-        SpecialtyPtr sp;
+        utils::SmartPtr<Specialty> sp;
         for(const App::SpecSubj& ss : spec_subjs) {
             if(ss.specialty->get_command_name() == specialty_name && ss.type == "required") {
                 if(sp.is_null()) sp = ss.specialty;
@@ -202,6 +203,9 @@ namespace susi {
         }
 
         course++;
+        if(group > specialty->get_groups_cnts()[course]) {
+            group = specialty->get_groups_cnts()[course];
+        }
     }
 
     double Student::avg_grade() const {
@@ -209,6 +213,8 @@ namespace susi {
         for(size_t i = 0; i < grades.size(); i++) {
             grade += grades[i].value;
         }
+
+        if(grades.size() == 0) return 0;
 
         return grade / grades.size();
     }
@@ -237,7 +243,7 @@ namespace susi {
         in.read(tmp, size);
         tmp[size] = '\0';
 
-        const std::vector<SpecialtyPtr>& specialties = app.get_specialties();
+        const std::vector<utils::SmartPtr<Specialty>>& specialties = app.get_specialties();
         for(size_t i = 0; i < specialties.size(); i++) {
             if(specialties[i]->get_name() == tmp) {
                 s.specialty = specialties[i];
@@ -289,7 +295,7 @@ namespace susi {
 
         for(size_t i = 0; i < count; i++) {
             // read value
-            Grade grade(0, SubjectPtr());
+            Grade grade(0, utils::SmartPtr<Subject>());
             in.read((char*) &grade.value, sizeof(grade.value));
 
             if(grade.value < 2. - utils::GRADES_EPS || grade.value > 6. + utils::GRADES_EPS) {
@@ -302,7 +308,7 @@ namespace susi {
             in.read(tmp, size);
             tmp[size] = '\0';
             
-            const std::vector<SubjectPtr>& subjects = app.get_subjects();
+            const std::vector<utils::SmartPtr<Subject>>& subjects = app.get_subjects();
             for(size_t i = 0; i < subjects.size(); i++) {
                 if(subjects[i]->get_name() == tmp) {
                     grade.subject = subjects[i];
@@ -355,6 +361,7 @@ namespace susi {
         out.write((char*) &size, sizeof(size));
 
         for(size_t i = 0; i < grades.size(); i++) {
+            std::cout << "here";
             // write value
             out.write((char*) &grades[i].value, sizeof(grades[i].value));
 

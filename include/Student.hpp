@@ -5,12 +5,10 @@
 
 #include "Specialty.hpp"
 #include "Subject.hpp"
-#include "utility/SmrtPtr.hpp"
+#include "utility/SmartPtr.hpp"
 
 
 namespace susi {
-    typedef utils::SmrtPtr<Specialty> SpecialtyPtr;
-    typedef utils::SmrtPtr<Subject> SubjectPtr;
     
     class App;
 
@@ -25,16 +23,16 @@ namespace susi {
     public:
         struct Grade {
             double value;
-            SubjectPtr subject;
+            utils::SmartPtr<Subject> subject;
         
-            Grade() : value(0), subject(SubjectPtr()) {}
-            Grade(double val, SubjectPtr subj) : value(val), subject(subj) {}
+            Grade() : value(0), subject(utils::SmartPtr<Subject>()) {}
+            Grade(double val, utils::SmartPtr<Subject> subj) : value(val), subject(subj) {}
         };
 
     private:
         std::string name;
         std::size_t faculty_number;
-        SpecialtyPtr specialty;
+        utils::SmartPtr<Specialty> specialty;
         unsigned short course;
         unsigned short group;
         Status status;
@@ -45,7 +43,7 @@ namespace susi {
         Student() = default;
         Student(std::string name,
             std::size_t faculty_number,
-            SpecialtyPtr s,
+            utils::SmartPtr<Specialty> s,
             unsigned short group);
         Student(const Student& s) = default;
         ~Student() = default;
@@ -54,7 +52,7 @@ namespace susi {
 
         const std::string& get_name() const;
         const std::size_t& get_fn() const;
-        const SpecialtyPtr& get_specialty() const;
+        const utils::SmartPtr<Specialty>& get_specialty() const;
         const unsigned short& get_course() const;
         const unsigned short& get_group() const;
         std::string get_status() const;

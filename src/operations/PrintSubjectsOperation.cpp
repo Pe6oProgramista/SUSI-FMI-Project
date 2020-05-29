@@ -22,7 +22,7 @@ namespace susi {
         }
         
         std::cout << "Name\n\n";
-        for(const SubjectPtr& s : app.get_subjects()) {
+        for(const utils::SmartPtr<Subject>& s : app.get_subjects()) {
             std::cout << s->get_name() << '\n';
         }
     }

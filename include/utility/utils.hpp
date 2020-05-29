@@ -3,8 +3,8 @@
 #include <vector>
 #include <string>
 
-#include "../include/Operation.hpp"
-#include "../include/App.hpp"
+#include "Operation.hpp"
+#include "App.hpp"
 
 namespace susi {
     namespace utils {
@@ -15,10 +15,6 @@ namespace susi {
         std::vector<std::string> split(const std::string& s, std::string delimiter);
         
         std::string trim(std::string s);
-
-        char toUpperCase(const char& c);
-
-        char toLowerCase(const char& c);
 
         int countDigit(int n);
 

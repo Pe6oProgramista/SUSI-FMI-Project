@@ -34,7 +34,7 @@ namespace susi {
             groups_cnts.push_back(atoi(args[i + get_args_count()].c_str()));
         }
 
-        SpecialtyPtr sp(new Specialty(args[0], groups_cnts, max_failed_exams));
+        utils::SmartPtr<Specialty> sp(new Specialty(args[0], groups_cnts, max_failed_exams));
 
         app.add_specialty(sp);
 

@@ -16,8 +16,8 @@ namespace susi {
     }
 
     void App::close() {
-        specialties = std::vector<SpecialtyPtr>();
-        subjects = std::vector<SubjectPtr>();
+        specialties = std::vector<utils::SmartPtr<Specialty>>();
+        subjects = std::vector<utils::SmartPtr<Subject>>();
         students = std::vector<Student>();
         spec_subjecs = std::vector<SpecSubj>();
 
@@ -47,16 +47,16 @@ namespace susi {
     std::string App::get_spec_subj_fn() const { return spec_subj_filename; }
     void App::set_spec_subj_fn(std::string filename) { spec_subj_filename = filename; }
 
-    const std::vector<SpecialtyPtr>& App::get_specialties() const { return specialties; }
+    const std::vector<utils::SmartPtr<Specialty>>& App::get_specialties() const { return specialties; }
 
-    const std::vector<SubjectPtr>& App::get_subjects() const { return subjects; }
+    const std::vector<utils::SmartPtr<Subject>>& App::get_subjects() const { return subjects; }
 
     const std::vector<Student>& App::get_students() const { return students; }
 
     const std::vector<App::SpecSubj>& App::get_spec_subjs() const { return spec_subjecs; }
 
-    void App::add_specialty(SpecialtyPtr specialty) {
-        for(const SpecialtyPtr& sp : specialties) {
+    void App::add_specialty(utils::SmartPtr<Specialty> specialty) {
+        for(const utils::SmartPtr<Specialty>& sp : specialties) {
             if(sp->get_command_name() == specialty->get_command_name()) {
                 throw AppException("This specialty already exists");
             }
@@ -65,8 +65,8 @@ namespace susi {
         specialties.push_back(specialty);
     }
 
-    void App::add_subject(SubjectPtr subject) {
-        for(const SubjectPtr& sp : subjects) {
+    void App::add_subject(utils::SmartPtr<Subject> subject) {
+        for(const utils::SmartPtr<Subject>& sp : subjects) {
             if(*sp == *subject) {
                 throw AppException("This subject already exists");
             }
@@ -85,9 +85,9 @@ namespace susi {
             }
         }
 
-        SpecialtyPtr spec;
+        utils::SmartPtr<Specialty> spec;
 
-        for(const SpecialtyPtr& sp : specialties) {
+        for(const utils::SmartPtr<Specialty>& sp : specialties) {
             if(sp->get_command_name() == specialty_name) {
                 spec = sp;
                 break;
@@ -381,9 +381,9 @@ namespace susi {
     void App::read(std::ifstream& in) {
         if(!std::getline(in, specialties_filename)) specialties_filename = app_filename + "_specialties.bin";
         if(!std::getline(in, subjects_filename)) subjects_filename = app_filename + "_subjects.bin";
-        if(!std::getline(in, students_filename)) students_filename = app_filename + "_students.bin";
         if(!std::getline(in, spec_subj_filename)) spec_subj_filename = app_filename + "_spec_subj.bin";
-        
+        if(!std::getline(in, students_filename)) students_filename = app_filename + "_students.bin";
+
         // if app_file is bin
         {
             // size_t size;
@@ -424,16 +424,16 @@ namespace susi {
 
         read_specialties();
         read_subjects();
-        read_students();
         read_spec_subj();
+        read_students();
     }
 
     // Write files
     void App::write(std::ofstream& out) const {
         out << specialties_filename << '\n'
             << subjects_filename << '\n'
-            << students_filename << '\n'
-            << spec_subj_filename << '\n';
+            << spec_subj_filename << '\n'
+            << students_filename << '\n';
         
         // if app_file is bin
         {
@@ -462,8 +462,8 @@ namespace susi {
 
         write_specialties();
         write_subjects();
-        write_students();
         write_spec_subj();
+        write_students();
     }
 
 }

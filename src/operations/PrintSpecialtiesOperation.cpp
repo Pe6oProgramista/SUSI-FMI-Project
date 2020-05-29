@@ -21,7 +21,7 @@ namespace susi {
             throw OperationException("ERROR: Different count of arguments");
         }
 
-        const std::vector<SpecialtyPtr>& specialties = app.get_specialties();
+        const std::vector<utils::SmartPtr<Specialty>>& specialties = app.get_specialties();
         
         std::size_t name_size = sizeof("Name");
         int courses_size = sizeof("Courses");
@@ -30,7 +30,7 @@ namespace susi {
         
         std::vector<std::string> groups_strs;
 
-        for(const SpecialtyPtr& s : specialties) {
+        for(const utils::SmartPtr<Specialty>& s : specialties) {
             if(name_size < s->get_name().size()) {
                 name_size = s->get_name().size();
             }
