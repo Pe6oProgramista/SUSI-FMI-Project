@@ -152,6 +152,14 @@ namespace susi {
         }
         s.course = course;
 
+        for(size_t i = 0; i < spec_subjecs.size(); i++) {
+            if(spec_subjecs[i].specialty->get_command_name() == spec_name &&
+                spec_subjecs[i].subject->get_command_name() == subj_name &&
+                spec_subjecs[i].course == course) {
+                    throw AppException("ERROR: This subject is already added to this course in " + spec_name);
+            }
+        }
+
         for(Student& st : students) {
             if(st.get_specialty()->get_command_name() == spec_name &&
                 st.get_course() == s.course &&

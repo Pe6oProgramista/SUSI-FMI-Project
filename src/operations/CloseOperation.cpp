@@ -17,8 +17,10 @@ namespace susi {
             throw OperationException("ERROR: Different count of arguments");
         }
 
+        std::string app_filename = app.get_app_filename();
+
         app.close();
-        std::cout << "Successfully closed " << app.get_app_filename() << '\n';
+        std::cout << "Successfully closed " << app_filename << '\n';
     }
 
 }

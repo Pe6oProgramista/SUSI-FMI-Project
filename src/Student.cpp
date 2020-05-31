@@ -361,7 +361,6 @@ namespace susi {
         out.write((char*) &size, sizeof(size));
 
         for(size_t i = 0; i < grades.size(); i++) {
-            std::cout << "here";
             // write value
             out.write((char*) &grades[i].value, sizeof(grades[i].value));
 

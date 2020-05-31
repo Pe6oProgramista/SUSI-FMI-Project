@@ -15,7 +15,7 @@ namespace susi {
         }
 
         if(app.get_status()) {
-            app.find_operation("close")->execute(std::vector<std::string>());
+            app.find_operation("close")->execute(args);
             app.set_status(false);
         }
 
